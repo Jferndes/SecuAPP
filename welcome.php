@@ -1,4 +1,7 @@
 <?php
+// Définir le fuseau horaire dès le début du script
+date_default_timezone_set('Europe/Paris'); // À adapter selon votre localisation
+
 require_once 'includes/header.php';
 
 // Vérification si l'utilisateur est connecté
@@ -26,7 +29,13 @@ $userData = $user->findById($_SESSION['user_id']);
                     <h3>Informations du compte</h3>
                     <p><strong>Nom d'utilisateur:</strong> <?php echo htmlspecialchars($userData['username']); ?></p>
                     <p><strong>Email:</strong> <?php echo htmlspecialchars($userData['email']); ?></p>
-                    <p><strong>Compte créé le:</strong> <?php echo date('d/m/Y H:i', strtotime($userData['created_at'])); ?></p>
+                    <p><strong>Compte créé le:</strong> 
+                        <?php 
+                        // Création d'un objet DateTime pour respecter le fuseau horaire
+                        $creationDate = new DateTime($userData['created_at']);
+                        echo $creationDate->format('d/m/Y H:i'); 
+                        ?>
+                    </p>
                 </div>
                 
                 <div class="d-grid gap-2">

@@ -1,4 +1,7 @@
 <?php
+// Définir le fuseau horaire dès le début du script
+date_default_timezone_set('Europe/Paris'); // À adapter selon votre localisation
+
 class User {
     private $conn;
     private $table_name = "users";
@@ -116,8 +119,10 @@ class User {
         // Génération d'un nouveau code à 6 chiffres
         $code = sprintf("%06d", mt_rand(1, 999999));
         
-        // Définition de l'expiration (10 minutes)
-        $expires_at = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+        // Obtention de la date actuelle avec le bon fuseau horaire
+        $current_datetime = new DateTime();
+        $current_datetime->add(new DateInterval('PT10M')); // Ajoute 10 minutes
+        $expires_at = $current_datetime->format('Y-m-d H:i:s');
         
         // Insertion du nouveau code
         $query = "INSERT INTO auth_codes (user_id, code, expires_at) 
@@ -143,16 +148,20 @@ class User {
      * @return bool Validité du code
      */
     public function verifyAuthCode($user_id, $code) {
+        // Utilisation de l'heure actuelle du serveur avec le bon fuseau horaire
         $query = "SELECT * FROM auth_codes 
                   WHERE user_id = :user_id 
                   AND code = :code 
-                  AND expires_at > NOW() 
+                  AND expires_at > :current_time 
                   LIMIT 1";
         
         $stmt = $this->conn->prepare($query);
         
+        $current_time = (new DateTime())->format('Y-m-d H:i:s');
+        
         $stmt->bindParam(':user_id', $user_id);
         $stmt->bindParam(':code', $code);
+        $stmt->bindParam(':current_time', $current_time);
         
         $stmt->execute();
         
@@ -184,8 +193,10 @@ class User {
         // Génération d'un nouveau jeton
         $token = bin2hex(random_bytes(32));
         
-        // Définition de l'expiration (1 heure)
-        $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour'));
+        // Obtention de la date actuelle avec le bon fuseau horaire
+        $current_datetime = new DateTime();
+        $current_datetime->add(new DateInterval('PT1H')); // Ajoute 1 heure
+        $expires_at = $current_datetime->format('Y-m-d H:i:s');
         
         // Insertion du nouveau jeton
         $query = "INSERT INTO reset_tokens (user_id, token, expires_at) 
@@ -210,14 +221,18 @@ class User {
      * @return int|bool ID de l'utilisateur ou false
      */
     public function verifyResetToken($token) {
+        // Utilisation de l'heure actuelle du serveur avec le bon fuseau horaire
         $query = "SELECT user_id FROM reset_tokens 
                   WHERE token = :token 
-                  AND expires_at > NOW() 
+                  AND expires_at > :current_time 
                   LIMIT 1";
         
         $stmt = $this->conn->prepare($query);
         
+        $current_time = (new DateTime())->format('Y-m-d H:i:s');
+        
         $stmt->bindParam(':token', $token);
+        $stmt->bindParam(':current_time', $current_time);
         
         $stmt->execute();
         

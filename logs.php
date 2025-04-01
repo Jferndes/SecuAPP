@@ -1,4 +1,7 @@
 <?php
+// Définir le fuseau horaire dès le début du script
+date_default_timezone_set('Europe/Paris'); // À adapter selon votre localisation
+
 require_once 'includes/header.php';
 
 // Cette page devrait être protégée par une authentification d'administrateur
@@ -52,7 +55,13 @@ $logs = $logger->getLogs($limit, $offset);
                                         <td><?php echo htmlspecialchars($log['action']); ?></td>
                                         <td><?php echo htmlspecialchars($log['ip_address']); ?></td>
                                         <td><?php echo htmlspecialchars($log['details']); ?></td>
-                                        <td><?php echo date('d/m/Y H:i:s', strtotime($log['created_at'])); ?></td>
+                                        <td>
+                                            <?php 
+                                            // Création d'un objet DateTime pour respecter le fuseau horaire
+                                            $date = new DateTime($log['created_at']);
+                                            echo $date->format('d/m/Y H:i:s'); 
+                                            ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
