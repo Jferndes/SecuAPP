@@ -1,39 +1,83 @@
 <?php
 /**
- * Classe pour l'envoi d'emails
+ * Classe pour l'envoi d'emails utilisant PHPMailer avec Mailtrap
  */
+
+// Importer les classes PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+// Assurez-vous que ces chemins correspondent à votre structure de dossiers
+require_once 'PHPMailer/src/Exception.php';
+require_once 'PHPMailer/src/PHPMailer.php';
+require_once 'PHPMailer/src/SMTP.php';
+
 class Mailer {
     private $from = "noreply@monsite.com";
+    private $fromName = "Mon Site";
+    
+    // Configuration Mailtrap par défaut
+    private $smtpHost = "sandbox.smtp.mailtrap.io";
+    private $smtpPort = 587;
+    private $smtpUsername = "8183e6bf8cfd4a";
+    private $smtpPassword = "496f0fad345508";
     
     /**
-     * Envoie un email
+     * Envoie un email avec PHPMailer
      * @param string $to Adresse email du destinataire
      * @param string $subject Sujet de l'email
      * @param string $message Contenu de l'email
      * @return bool Succès de l'envoi
      */
     public function send($to, $subject, $message) {
-        $headers = "From: " . $this->from . "\r\n";
-        $headers .= "Reply-To: " . $this->from . "\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        // Créer une nouvelle instance de PHPMailer
+        $mail = new PHPMailer(true);
         
-        // Dans un environnement de production, utilisez la fonction mail()
-        // ou un service tiers comme PHPMailer, SendGrid, etc.
-        // Pour ce projet, nous allons simuler l'envoi d'email en l'affichant
-        
-        echo "<div style='border: 1px solid #ccc; padding: 10px; margin: 10px;'>";
-        echo "<h3>Email simulé</h3>";
-        echo "<p><strong>À:</strong> $to</p>";
-        echo "<p><strong>Sujet:</strong> $subject</p>";
-        echo "<p><strong>Message:</strong></p>";
-        echo "<div>$message</div>";
-        echo "</div>";
-        
-        return true;
-        
-        // En production, utilisez:
-        // return mail($to, $subject, $message, $headers);
+        try {
+            // Configuration du serveur
+            $mail->isSMTP();
+            $mail->Host       = $this->smtpHost;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $this->smtpUsername;
+            $mail->Password   = $this->smtpPassword;
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = $this->smtpPort;
+            $mail->CharSet    = 'UTF-8';
+            
+            // Expéditeur et destinataires
+            $mail->setFrom($this->from, $this->fromName);
+            $mail->addAddress($to);
+            $mail->addReplyTo($this->from, $this->fromName);
+            
+            // Contenu
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $message;
+            $mail->AltBody = strip_tags($message);
+            
+            // Envoi du message
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            // Log l'erreur ou gérez-la selon vos besoins
+            error_log("Erreur d'envoi d'email: " . $mail->ErrorInfo);
+            
+            // Mode de développement/débogage : afficher l'email qui aurait été envoyé
+            if (isset($_SERVER['SERVER_NAME']) && ($_SERVER['SERVER_NAME'] === 'localhost' || strpos($_SERVER['SERVER_NAME'], 'dev.') === 0)) {
+                echo "<div style='border: 1px solid #ccc; padding: 10px; margin: 10px;'>";
+                echo "<h3>Email simulé (PHPMailer a échoué)</h3>";
+                echo "<p><strong>Erreur:</strong> " . $mail->ErrorInfo . "</p>";
+                echo "<p><strong>À:</strong> $to</p>";
+                echo "<p><strong>Sujet:</strong> $subject</p>";
+                echo "<p><strong>Message:</strong></p>";
+                echo "<div>$message</div>";
+                echo "</div>";
+                return true; // Retourne true en mode développement
+            }
+            
+            return false;
+        }
     }
     
     /**
@@ -65,7 +109,7 @@ class Mailer {
      * @return bool Succès de l'envoi
      */
     public function sendResetLink($to, $token) {
-        $reset_link = "http://" . $_SERVER['HTTP_HOST'] . "/reset_password.php?token=" . $token;
+        $reset_link = "http://" . $_SERVER['HTTP_HOST'] . "/SecuAPP/reset_password.php?token=" . $token;
         
         $subject = "Réinitialisation de votre mot de passe";
         $message = "
@@ -83,6 +127,32 @@ class Mailer {
         ";
         
         return $this->send($to, $subject, $message);
+    }
+    
+    /**
+     * Configure les paramètres SMTP
+     * @param string $host Hôte SMTP
+     * @param int $port Port SMTP
+     * @param string $username Nom d'utilisateur SMTP
+     * @param string $password Mot de passe SMTP
+     */
+    public function configureSMTP($host, $port, $username, $password) {
+        $this->smtpHost = $host;
+        $this->smtpPort = $port;
+        $this->smtpUsername = $username;
+        $this->smtpPassword = $password;
+    }
+    
+    /**
+     * Configure l'expéditeur
+     * @param string $email Email de l'expéditeur
+     * @param string $name Nom de l'expéditeur
+     */
+    public function setFrom($email, $name = '') {
+        $this->from = $email;
+        if (!empty($name)) {
+            $this->fromName = $name;
+        }
     }
 }
 ?>
