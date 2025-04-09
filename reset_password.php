@@ -4,7 +4,7 @@ require_once 'includes/header.php';
 $error = "";
 $success = "";
 $user_id = null;
-$token = $_GET['token'] ?? '';
+$token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
 // Vérification du jeton
 if(empty($token)) {
@@ -12,10 +12,15 @@ if(empty($token)) {
     exit;
 }
 
-$user_id = $user->verifyResetToken($token);
-
-if(!$user_id) {
-    $error = "Le lien de réinitialisation est invalide ou a expiré.";
+// Validation du format du jeton (doit être une chaîne hexadécimale de 64 caractères)
+if(!preg_match('/^[a-f0-9]{64}$/', $token)) {
+    $error = "Format de jeton invalide.";
+} else {
+    $user_id = $user->verifyResetToken($token);
+    
+    if(!$user_id) {
+        $error = "Le lien de réinitialisation est invalide ou a expiré.";
+    }
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'POST' && $user_id) {

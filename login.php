@@ -4,11 +4,15 @@ require_once 'includes/header.php';
 $error = "";
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
+    // Sanitization des entrées utilisateur
+    $username = trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
     $password = $_POST['password'] ?? '';
     
+    // Vérification supplémentaire des entrées
     if(empty($username) || empty($password)) {
         $error = "Tous les champs sont obligatoires.";
+    } elseif(strlen($username) > 50) { // Limite la longueur pour éviter les attaques
+        $error = "Nom d'utilisateur trop long.";
     } else {
         // Recherche de l'utilisateur
         $userData = $user->findUser($username);
@@ -36,7 +40,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $error = "Nom d'utilisateur ou mot de passe incorrect.";
             // Journalisation des tentatives échouées
-            $logger->log(null, "Tentative de connexion échouée", "Utilisateur: $username");
+            $logger->log(null, "Tentative de connexion échouée", "Utilisateur: " . htmlspecialchars($username));
         }
     }
 }

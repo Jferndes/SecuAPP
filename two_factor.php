@@ -10,10 +10,12 @@ if(!isset($_SESSION['temp_user_id'])) {
 $error = "";
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $code = trim($_POST['code'] ?? '');
+    $code = trim(filter_input(INPUT_POST, 'code', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
     
     if(empty($code)) {
         $error = "Veuillez entrer le code d'authentification.";
+    } elseif(!preg_match('/^\d{6}$/', $code)) {
+        $error = "Le code d'authentification doit contenir 6 chiffres.";
     } else {
         // Vérification du code
         if($user->verifyAuthCode($_SESSION['temp_user_id'], $code)) {
@@ -56,7 +58,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" action="">
                 <div class="mb-3">
                     <label for="code" class="form-label">Code d'authentification</label>
-                    <input type="text" class="form-control" id="code" name="code" maxlength="6" required>
+                    <input type="text" class="form-control" id="code" name="code" maxlength="6" inputmode="numeric" pattern="\d{6}" required>
                 </div>
                 
                 <div class="d-grid gap-2">

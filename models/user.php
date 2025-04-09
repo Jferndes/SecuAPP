@@ -37,10 +37,10 @@ class User {
         // Hachage du mot de passe
         $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
         
-        // Liaison des valeurs
-        $stmt->bindParam(':username', $this->username);
-        $stmt->bindParam(':email', $this->email);
-        $stmt->bindParam(':password', $password_hash);
+        // Liaison des valeurs avec types explicites
+        $stmt->bindParam(':username', $this->username, PDO::PARAM_STR);
+        $stmt->bindParam(':email', $this->email, PDO::PARAM_STR);
+        $stmt->bindParam(':password', $password_hash, PDO::PARAM_STR);
         
         // Exécution de la requête
         if($stmt->execute()) {
@@ -64,10 +64,10 @@ class User {
         $stmt = $this->conn->prepare($query);
         
         // Assainissement des données
-        $value = htmlspecialchars(strip_tags($value));
+        $value = filter_var($value, FILTER_SANITIZE_SPECIAL_CHARS);
         
-        // Liaison des valeurs
-        $stmt->bindParam(':value', $value);
+        // Liaison des valeurs avec type explicite
+        $stmt->bindParam(':value', $value, PDO::PARAM_STR);
         
         // Exécution de la requête
         $stmt->execute();
@@ -91,8 +91,8 @@ class User {
         
         $stmt = $this->conn->prepare($query);
         
-        // Liaison des valeurs
-        $stmt->bindParam(':id', $id);
+        // Liaison des valeurs avec type explicite
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         
         // Exécution de la requête
         $stmt->execute();
@@ -113,7 +113,7 @@ class User {
         // Suppression des anciens codes
         $query = "DELETE FROM auth_codes WHERE user_id = :user_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();
         
         // Génération d'un nouveau code à 6 chiffres
@@ -130,9 +130,9 @@ class User {
         
         $stmt = $this->conn->prepare($query);
         
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->bindParam(':code', $code);
-        $stmt->bindParam(':expires_at', $expires_at);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':code', $code, PDO::PARAM_STR);
+        $stmt->bindParam(':expires_at', $expires_at, PDO::PARAM_STR);
         
         if($stmt->execute()) {
             return $code;
@@ -159,9 +159,12 @@ class User {
         
         $current_time = (new DateTime())->format('Y-m-d H:i:s');
         
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->bindParam(':code', $code);
-        $stmt->bindParam(':current_time', $current_time);
+        // Sanitization et liaison avec types explicites
+        $code = filter_var($code, FILTER_SANITIZE_SPECIAL_CHARS);
+        
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':code', $code, PDO::PARAM_STR);
+        $stmt->bindParam(':current_time', $current_time, PDO::PARAM_STR);
         
         $stmt->execute();
         
@@ -169,7 +172,7 @@ class User {
             // Suppression du code utilisé
             $query = "DELETE FROM auth_codes WHERE user_id = :user_id";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':user_id', $user_id);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $stmt->execute();
             
             return true;
@@ -187,7 +190,7 @@ class User {
         // Suppression des anciens jetons
         $query = "DELETE FROM reset_tokens WHERE user_id = :user_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();
         
         // Génération d'un nouveau jeton
@@ -204,9 +207,9 @@ class User {
         
         $stmt = $this->conn->prepare($query);
         
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->bindParam(':token', $token);
-        $stmt->bindParam(':expires_at', $expires_at);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+        $stmt->bindParam(':expires_at', $expires_at, PDO::PARAM_STR);
         
         if($stmt->execute()) {
             return $token;
@@ -231,14 +234,17 @@ class User {
         
         $current_time = (new DateTime())->format('Y-m-d H:i:s');
         
-        $stmt->bindParam(':token', $token);
-        $stmt->bindParam(':current_time', $current_time);
+        // Sanitization et liaison avec types explicites
+        $token = filter_var($token, FILTER_SANITIZE_SPECIAL_CHARS);
+        
+        $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+        $stmt->bindParam(':current_time', $current_time, PDO::PARAM_STR);
         
         $stmt->execute();
         
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $row['user_id'];
+            return (int)$row['user_id'];
         }
         
         return false;
@@ -260,16 +266,16 @@ class User {
         // Hachage du nouveau mot de passe
         $password_hash = password_hash($new_password, PASSWORD_BCRYPT);
         
-        // Liaison des valeurs
-        $stmt->bindParam(':password', $password_hash);
-        $stmt->bindParam(':id', $user_id);
+        // Liaison des valeurs avec types explicites
+        $stmt->bindParam(':password', $password_hash, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
         
         // Exécution de la requête
         if($stmt->execute()) {
             // Suppression des jetons de réinitialisation
             $query = "DELETE FROM reset_tokens WHERE user_id = :user_id";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':user_id', $user_id);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $stmt->execute();
             
             return true;

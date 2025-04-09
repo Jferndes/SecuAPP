@@ -5,7 +5,7 @@ $error = "";
 $success = "";
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
+    $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?? '');
     
     if(empty($email)) {
         $error = "Veuillez entrer votre adresse email.";
@@ -35,7 +35,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = "Si cette adresse email est associée à un compte, un lien de réinitialisation a été envoyé.";
             
             // Journalisation
-            $logger->log(null, "Demande de réinitialisation (email inconnu)", "Email: $email");
+            $logger->log(null, "Demande de réinitialisation (email inconnu)", "Email: " . htmlspecialchars($email));
         }
     }
 }

@@ -5,9 +5,9 @@ $error = "";
 $success = "";
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Vérification des données
-    $username = trim($_POST['username'] ?? '');
-    $email = trim($_POST['email'] ?? '');
+    // Vérification des données avec sanitization améliorée
+    $username = trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+    $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
@@ -19,6 +19,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Le mot de passe doit contenir au moins 8 caractères.";
     } elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "L'adresse email n'est pas valide.";
+    } elseif(!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
+        $error = "Le nom d'utilisateur doit contenir entre 3 et 20 caractères alphanumériques ou underscore.";
     } else {
         // Vérification si l'utilisateur existe déjà
         if($user->findUser($username) || $user->findUser($email)) {
