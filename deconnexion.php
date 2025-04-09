@@ -12,6 +12,6 @@ if(isset($_SESSION['user_id'])) {
 }
 
 // Redirection vers la page de connexion
-header("Location: login.php");
+header("Location: connexion.php");
 exit;
 ?>

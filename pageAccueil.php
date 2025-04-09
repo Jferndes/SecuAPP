@@ -6,7 +6,7 @@ require_once 'includes/header.php';
 
 // Vérification si l'utilisateur est connecté
 if(!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: connexion.php");
     exit;
 }
 
@@ -39,7 +39,7 @@ $userData = $user->findById($_SESSION['user_id']);
                 </div>
                 
                 <div class="d-grid gap-2">
-                    <a href="logout.php" class="btn btn-danger">Se déconnecter</a>
+                    <a href="deconnexion.php" class="btn btn-danger">Se déconnecter</a>
                 </div>
             </div>
         </div>

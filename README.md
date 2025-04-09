@@ -92,13 +92,13 @@ auth-app/
 │
 ├── database.sql           # Script SQL pour la création des tables
 ├── index.php              # Page d'accueil/redirection
-├── login.php              # Page de connexion
-├── register.php           # Page d'inscription
-├── two_factor.php         # Vérification A2F
-├── forgot_password.php    # Demande de réinitialisation de mot de passe
-├── reset_password.php     # Réinitialisation de mot de passe
-├── welcome.php            # Page d'accueil après connexion
-├── logout.php             # Déconnexion
+├── connexion.php              # Page de connexion
+├── deconnexion.php           # Page d'inscription
+├── authDeuxFacteur.php         # Vérification A2F
+├── mdpOublie.php    # Demande de réinitialisation de mot de passe
+├── mdpReset.php     # Réinitialisation de mot de passe
+├── pageAccueil.php            # Page d'accueil après connexion
+├── deconnexion.php             # Déconnexion
 └── logs.php               # Historique des activités
 ```
 

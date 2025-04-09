@@ -82,7 +82,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
             
             <div class="text-center mt-3">
-                <p>Déjà inscrit? <a href="login.php">Connectez-vous</a></p>
+                <p>Déjà inscrit? <a href="connexion.php">Connectez-vous</a></p>
             </div>
         </div>
     </div>

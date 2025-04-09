@@ -32,7 +32,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $logger->log($userData['id'], "Connexion", "Étape 1: A2F envoyé");
                 
                 // Redirection vers la page A2F
-                header("Location: two_factor.php");
+                header("Location: authDeuxFacteur.php");
                 exit;
             } else {
                 $error = "Erreur lors de la génération du code d'authentification.";
@@ -71,12 +71,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="text-center mt-3">
-                    <p><a href="forgot_password.php">Mot de passe oublié?</a></p>
+                    <p><a href="mdpOublie.php">Mot de passe oublié?</a></p>
                 </div>
             </form>
             
             <div class="text-center mt-3">
-                <p>Pas encore inscrit? <a href="register.php">Créez un compte</a></p>
+                <p>Pas encore inscrit? <a href="inscription.php">Créez un compte</a></p>
             </div>
         </div>
     </div>

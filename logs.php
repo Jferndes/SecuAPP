@@ -8,7 +8,7 @@ require_once 'includes/header.php';
 // Pour simplifier, on va juste vérifier si l'utilisateur est connecté
 
 if(!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: connexion.php");
     exit;
 }
 
@@ -91,7 +91,7 @@ $logs = $logger->getLogs($limit, $offset);
         </div>
         
         <div class="text-center mt-3">
-            <a href="welcome.php" class="btn btn-primary">Retour à l'accueil</a>
+            <a href="pageAccueil.php" class="btn btn-primary">Retour à l'accueil</a>
         </div>
     </div>
 </div>

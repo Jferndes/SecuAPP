@@ -109,7 +109,7 @@ class Mailer {
      * @return bool Succès de l'envoi
      */
     public function sendResetLink($to, $token) {
-        $reset_link = "http://" . $_SERVER['HTTP_HOST'] . "/SecuAPP/reset_password.php?token=" . $token;
+        $reset_link = "http://" . $_SERVER['HTTP_HOST'] . "/SecuAPP/mdpReset.php?token=" . $token;
         
         $subject = "Réinitialisation de votre mot de passe";
         $message = "

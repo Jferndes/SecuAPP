@@ -8,7 +8,7 @@ $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
 // Vérification du jeton
 if(empty($token)) {
-    header("Location: login.php");
+    header("Location: connexion.php");
     exit;
 }
 
@@ -58,7 +58,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && $user_id) {
         <?php if(!empty($success)): ?>
             <div class="alert alert-success"><?php echo $success; ?></div>
             <div class="text-center mt-3">
-                <a href="login.php" class="btn btn-primary">Se connecter</a>
+                <a href="connexion.php" class="btn btn-primary">Se connecter</a>
             </div>
         <?php elseif($user_id): ?>
             <div class="form-container">

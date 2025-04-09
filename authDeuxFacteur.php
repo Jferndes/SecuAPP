@@ -3,7 +3,7 @@ require_once 'includes/header.php';
 
 // Vérification si l'utilisateur est en attente de vérification A2F
 if(!isset($_SESSION['temp_user_id'])) {
-    header("Location: login.php");
+    header("Location: connexion.php");
     exit;
 }
 
@@ -33,7 +33,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $logger->log($userData['id'], "Connexion", "Étape 2: A2F validé");
             
             // Redirection vers la page d'accueil
-            header("Location: welcome.php");
+            header("Location: pageAccueil.php");
             exit;
         } else {
             $error = "Code d'authentification invalide ou expiré.";
