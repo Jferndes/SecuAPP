@@ -10,7 +10,6 @@ require_once 'models/user.php';
 // Connexion à la base de données
 $database = new Database();
 $db = $database->getConnection();
-$database->createTables();
 
 // Initialisation des objets
 $logger = new Logger($db);
