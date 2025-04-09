@@ -15,14 +15,14 @@ require_once 'PHPMailer/src/SMTP.php';
 
 class Mailer {
     private $from = "noreply@monsite.com";
-    private $fromName = "Mon Site";
+    private $fromName = "B3-SecuAPP";
     
-    // Configuration Mailtrap par défaut
-    private $smtpHost = "sandbox.smtp.mailtrap.io";
+    // Configuration SMTP Google                          Configuration SMTP mailtrap
+    private $smtpHost = "smtp.gmail.com";                //"sandbox.smtp.mailtrap.io";
     private $smtpPort = 587;
-    private $smtpUsername = "8183e6bf8cfd4a";
-    private $smtpPassword = "496f0fad345508";
-    
+    private $smtpUsername = "ferndesjojo@gmail.com";     //"8183e6bf8cfd4a";
+    private $smtpPassword = "wyhg jfwf phnz fgfz";       //"496f0fad345508";
+
     /**
      * Envoie un email avec PHPMailer
      * @param string $to Adresse email du destinataire
